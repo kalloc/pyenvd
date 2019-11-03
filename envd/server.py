@@ -1,5 +1,7 @@
 import datetime
 import logging
+import os
+import re
 from collections import defaultdict
 from typing import DefaultDict
 
@@ -7,6 +9,7 @@ import aiofiles.os
 import aiorpcx
 
 logger = logging.getLogger('envd')
+ALPNANUM = re.compile('^[a-z0-9A-Z]+$')
 
 
 class ServerSession(aiorpcx.RPCSession):
@@ -28,9 +31,10 @@ class ServerSession(aiorpcx.RPCSession):
         if item['expire'] > now:
             return item['body']
 
-        # TODO: check file name
         try:
             filename = f'{self.env_path}/{config_name}.env'
+            if os.path.abspath(filename) != filename or not ALPNANUM.match(config_name):
+                return aiorpcx.ProtocolError(1, 'wrong config name')
             async with aiofiles.open(filename) as fp:
                 lines = filter(
                     lambda item: item and not item.startswith('#'),
@@ -47,7 +51,7 @@ class ServerSession(aiorpcx.RPCSession):
                 return body
 
         except FileNotFoundError:
-            return None
+            return aiorpcx.ProtocolError(2, 'unsupported config name')
 
     async def handle_request(self, request):
         name = f'method_{request.method}'
