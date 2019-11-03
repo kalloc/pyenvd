@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"
+pylint = "*"
+mypy = "*"
+
+[packages]
+click = "==7.0"
+aiorpcx = '==0.18.3'
+aiofiles = '==0.4.0'
+daemonize = '==2.4.7'
+
+[requires]
+python_version = "3.7"
