@@ -45,7 +45,7 @@ class ServerSession(aiorpcx.RPCSession):
                 )
                 body = '\n'.join(lines)
                 self.CACHES[config_name] = {
-                    'expire': datetime.datetime.now() + datetime.timedelta(minutes=5),
+                    'expire': datetime.datetime.now() + datetime.timedelta(seconds=15),
                     'body': body
                 }
                 return body
